@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Suggestions for BATMJS Group</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .config-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .config-section h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .config-section p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .data-section {
+            margin-top: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .api-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .api-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        select {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .api-data {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .quote-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .joke-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .movie-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .movie-poster {
+            flex-shrink: 0;
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        
+        .movie-info {
+            flex: 1;
+        }
+        
+        .movie-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #fff;
+        }
+        
+        .movie-detail {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        
+        .movie-detail strong {
+            color: #ffd700;
+        }
+        
+        .movie-plot {
+            margin: 15px 0;
+            font-style: italic;
+            line-height: 1.5;
+            border-left: 3px solid #ffd700;
+            padding-left: 15px;
+        }
+        
+        .no-poster {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5em;
+    color: #fff;
+    background: rgba(0,0,0,0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background 0.2s;
+}
+.close-btn:hover {
+    background: #e74c3c;
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movies Suggestions for BATMJS Group</h1>
+        
+        <div id="status" class="status loading">Connecting to Firebase...</div>
+        
+        <!-- Remove the global Search Movie button from the input section -->
+<div class="input-section">
+    <label for="dataInput">Enter Movie Name:</label>
+    <input type="text" id="dataInput" placeholder="Enter movies/TV shows name to suggest...">
+    <button id="submitBtn" onclick="submitData()" disabled>Submit</button>
+    <!-- <button id="searchBtn" onclick="searchMovie()" disabled>Search Movie</button> -->
+</div>
+        
+        <div class="data-section">
+            <h2>All Suggested Movies:</h2>
+            <div id="dataTable"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-firestore-compat.min.js"></script>
+
+    <script>
+        // Firebase configuration - REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+    apiKey: "AIzaSyDdHZ-Q-nad9W8ITXqVeZU8fAWWxp98Lzk",
+    authDomain: "moviessuggestionsbatmjs.firebaseapp.com",
+    projectId: "moviessuggestionsbatmjs",
+    storageBucket: "moviessuggestionsbatmjs.firebasestorage.app",
+    messagingSenderId: "234006379497",
+    appId: "1:234006379497:web:127d68d1cad616029de978",
+    measurementId: "G-D1M402GR7Z"
+  };
+
+        // OMDB API Configuration - REPLACE WITH YOUR API KEY
+        const OMDB_API_KEY = "c0c0640a"; // Get from http://www.omdbapi.com/apikey.aspx
+        const OMDB_BASE_URL = "https://www.omdbapi.com/";
+
+        let db;
+        let isConnected = false;
+        let currentMovieData = null;
+
+        // Initialize Firebase
+        function initFirebase() {
+            try {
+                // Check if config is still default/placeholder
+                if (firebaseConfig.apiKey === "your-api-key-here") {
+                    showStatus("Please configure Firebase settings first", "error");
+                    return;
+                }
+
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                // Test connection by trying to read data
+                db.collection('entries').limit(1).get()
+                    .then(() => {
+                        isConnected = true;
+                        showStatus("We are online!", "connected");
+                        document.getElementById('submitBtn').disabled = false;
+                        //document.getElementById('searchBtn').disabled = false;
+                        loadData();
+                    })
+                    .catch((error) => {
+                        console.error("Firebase connection error:", error);
+                        showStatus("Failed to connect to Firebase: " + error.message, "error");
+                    });
+                
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                showStatus("Firebase initialization failed: " + error.message, "error");
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+        }
+
+        // Submit data to Firebase
+        function submitData() {
+            const input = document.getElementById('dataInput');
+            const value = input.value.trim();
+            
+            if (!value) {
+                alert('Please enter some data');
+                return;
+            }
+
+            if (!isConnected) {
+                alert('Not connected to Firebase');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            const entry = {
+                data: value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                created: new Date().toISOString(),
+                source: 'user_input'
+            };
+
+            db.collection('entries').add(entry)
+                .then(() => {
+                    input.value = '';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save to DB';
+                    // Data will update automatically via real-time listener
+                })
+                .catch((error) => {
+                    console.error("Error saving data:", error);
+                    alert('Error saving data: ' + error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save to DB';
+                });
+        }
+
+        // Load and display data with real-time updates
+        function loadData() {
+            db.collection('entries')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot((querySnapshot) => {
+                    const entries = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        entries.push({
+                            id: doc.id,
+                            data: data.data,
+                            timestamp: data.timestamp ? data.timestamp.toDate() : new Date(data.created)
+                        });
+                    });
+                    displayData(entries);
+                }, (error) => {
+                    console.error("Error loading data:", error);
+                    showStatus("Error loading data: " + error.message, "error");
+                });
+        }
+
+        // Display data in table
+function displayData(entries) {
+    const tableContainer = document.getElementById('dataTable');
+    
+    if (entries.length === 0) {
+        tableContainer.innerHTML = '<div class="no-data">No data saved yet</div>';
+        return;
+    }
+
+    let tableHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Date & Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    entries.forEach((entry, index) => {
+        const formattedDate = entry.timestamp.toLocaleString();
+        const rowId = `omdb-row-${index}`;
+        tableHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(entry.data)}</td>
+                <td>${formattedDate}</td>
+                <td>
+                    <button onclick="searchMovieFromTable('${encodeURIComponent(entry.data)}', this, '${rowId}')">View Details</button>
+                </td>
+            </tr>
+            <tr id="${rowId}" class="omdb-result-row" style="display:none;">
+                <td colspan="4"></td>
+            </tr>
+        `;
+    });
+
+    tableHTML += '</tbody></table>';
+    tableContainer.innerHTML = tableHTML;
+}
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Allow Enter key to submit or search
+        document.getElementById('dataInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (e.shiftKey) {
+                    // Shift+Enter searches movie
+                    if (!document.getElementById('searchBtn').disabled) {
+                        searchMovie();
+                    }
+                } else {
+                    // Enter saves to database
+                    if (!document.getElementById('submitBtn').disabled) {
+                        submitData();
+                    }
+                }
+            }
+        });
+
+        // Initialize when page loads
+        window.onload = function() {
+            initFirebase();
+        };
+
+        // Add this new function to handle per-row search
+async function searchMovieFromTable(encodedQuery, btn, rowId) {
+    const query = decodeURIComponent(encodedQuery);
+    // Hide all other OMDB result rows
+    document.querySelectorAll('.omdb-result-row').forEach(row => {
+        row.style.display = 'none';
+        row.children[0].innerHTML = '';
+    });
+
+    const omdbRow = document.getElementById(rowId);
+    omdbRow.style.display = '';
+    omdbRow.children[0].innerHTML = '<div class="no-data">Searching OMDB database...</div>';
+
+    // Show loading state on the clicked button
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Searching...';
+
+    try {
+        const searchUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(query)}&plot=full`;
+        const response = await fetch(searchUrl);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.Response === "True") {
+            currentMovieData = data;
+            omdbRow.children[0].innerHTML = renderMovieCard(data, rowId);
+        } else {
+            // Try multiple results
+            const searchMultipleUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}`;
+            const multipleResponse = await fetch(searchMultipleUrl);
+            const multipleData = await multipleResponse.json();
+            
+            if (multipleData.Response === "True" && multipleData.Search) {
+                omdbRow.children[0].innerHTML = renderSearchResults(multipleData.Search, omdbRow);
+            } else {
+                omdbRow.children[0].innerHTML = `<div class="no-data" style="color: #e74c3c;">No results found for "${query}". Try a different search term.</div>`;
+                currentMovieData = null;
+            }
+        }
+    } catch (error) {
+        console.error('OMDB API error:', error);
+        omdbRow.children[0].innerHTML = `<div class="no-data" style="color: #e74c3c;">Error: ${error.message}</div>`;
+        currentMovieData = null;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+    
+
+        // OMDB API Integration Functions
+        async function searchMovie() {
+            const input = document.getElementById('dataInput');
+            const query = input.value.trim();
+            
+            if (!query) {
+                alert('Please enter a movie or TV show name to search');
+                return;
+            }
+
+            if (OMDB_API_KEY === "YOUR_OMDB_API_KEY") {
+                alert('Please configure your OMDB API key first');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const movieResults = document.getElementById('movieResults');
+            
+            // Show loading state
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+            movieResults.innerHTML = '<div class="no-data">Searching OMDB database...</div>';
+
+            try {
+                // First try exact search
+                const searchUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(query)}&plot=full`;
+                const response = await fetch(searchUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.Response === "True") {
+                    currentMovieData = data;
+                    displayMovieData(data);
+                } else {
+                    // If exact search fails, try search by title for multiple results
+                    const searchMultipleUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}`;
+                    const multipleResponse = await fetch(searchMultipleUrl);
+                    const multipleData = await multipleResponse.json();
+                    
+                    if (multipleData.Response === "True" && multipleData.Search) {
+                        displaySearchResults(multipleData.Search);
+                    } else {
+                        movieResults.innerHTML = `<div class="no-data" style="color: #e74c3c;">No results found for "${query}". Try a different search term.</div>`;
+                        currentMovieData = null;
+                    }
+                }
+
+            } catch (error) {
+                console.error('OMDB API error:', error);
+                movieResults.innerHTML = `<div class="no-data" style="color: #e74c3c;">Error: ${error.message}</div>`;
+                currentMovieData = null;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search Movie';
+            }
+        }
+
+        function displayMovieData(movie) {
+            const movieResults = document.getElementById('movieResults');
+            
+            const posterSrc = movie.Poster && movie.Poster !== "N/A" ? movie.Poster : null;
+            
+            const html = `
+                <div class="movie-card">
+                    ${posterSrc ? 
+                        `<img src="${posterSrc}" alt="${movie.Title} Poster" class="movie-poster" onerror="this.style.display='none'">` :
+                        `<div class="movie-poster no-poster">No Poster Available</div>`
+                    }
+                    <div class="movie-info">
+                        <h3 class="movie-title">${movie.Title} (${movie.Year})</h3>
+                        <div class="movie-detail"><strong>Type:</strong> ${movie.Type}</div>
+                        <div class="movie-detail"><strong>Genre:</strong> ${movie.Genre}</div>
+                        <div class="movie-detail"><strong>Director:</strong> ${movie.Director}</div>
+                        <div class="movie-detail"><strong>Cast:</strong> ${movie.Actors}</div>
+                        <div class="movie-detail"><strong>Runtime:</strong> ${movie.Runtime}</div>
+                        <div class="movie-detail"><strong>Released:</strong> ${movie.Released}</div>
+                        <div class="movie-detail"><strong>Rating:</strong> ${movie.Rated}</div>
+                        <div class="movie-detail"><strong>IMDB Rating:</strong> ${movie.imdbRating}/10</div>
+                        ${movie.Plot !== "N/A" ? `<div class="movie-plot"><strong>Plot:</strong> ${movie.Plot}</div>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            movieResults.innerHTML = html;
+        }
+
+        function displaySearchResults(searchResults) {
+            const movieResults = document.getElementById('movieResults');
+            
+            let html = '<h3>Multiple results found. Click on a movie to see details:</h3>';
+            
+            searchResults.slice(0, 5).forEach(movie => { // Show first 5 results
+                const posterSrc = movie.Poster && movie.Poster !== "N/A" ? movie.Poster : null;
+                html += `
+                    <div class="movie-card" style="cursor: pointer;" onclick="getMovieDetails('${movie.imdbID}')">
+                        ${posterSrc ? 
+                            `<img src="${posterSrc}" alt="${movie.Title} Poster" class="movie-poster" style="width: 80px; height: 120px;">` :
+                            `<div class="movie-poster no-poster" style="width: 80px; height: 120px; font-size: 10px;">No Poster</div>`
+                        }
+                        <div class="movie-info">
+                            <h4 class="movie-title">${movie.Title} (${movie.Year})</h4>
+                            <div class="movie-detail"><strong>Type:</strong> ${movie.Type}</div>
+                            <div class="movie-detail"><em>Click for full details</em></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            movieResults.innerHTML = html;
+        }
+
+        async function getMovieDetails(imdbID) {
+            const movieResults = document.getElementById('movieResults');
+            movieResults.innerHTML = '<div class="no-data">Loading movie details...</div>';
+            
+            try {
+                const detailUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=full`;
+                const response = await fetch(detailUrl);
+                const data = await response.json();
+                
+                if (data.Response === "True") {
+                    currentMovieData = data;
+                    displayMovieData(data);
+                } else {
+                    movieResults.innerHTML = '<div class="no-data" style="color: #e74c3c;">Error loading movie details</div>';
+                }
+            } catch (error) {
+                movieResults.innerHTML = `<div class="no-data" style="color: #e74c3c;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function saveMovieToDatabase() {
+            if (!currentMovieData || !isConnected) {
+                alert('No movie data to save or not connected to Firebase');
+                return;
+            }
+
+            try {
+                const entry = {
+                    data: `Movie: ${currentMovieData.Title} (${currentMovieData.Year}) - ${currentMovieData.Genre}`,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    created: new Date().toISOString(),
+                    source: 'omdb_api',
+                    movieData: {
+                        title: currentMovieData.Title,
+                        year: currentMovieData.Year,
+                        genre: currentMovieData.Genre,
+                        director: currentMovieData.Director,
+                        rating: currentMovieData.imdbRating,
+                        plot: currentMovieData.Plot
+                    }
+                };
+
+                await db.collection('entries').add(entry);
+                alert(`"${currentMovieData.Title}" saved to database successfully!`);
+                
+            } catch (error) {
+                console.error('Error saving movie data:', error);
+                alert('Error saving movie data: ' + error.message);
+            }
+        }
+
+function renderMovieCard(movie, rowId = null) {
+    const posterSrc = movie.Poster && movie.Poster !== "N/A" ? movie.Poster : null;
+    // Add close button if rowId is provided
+    const closeBtn = rowId
+        ? `<span class="close-btn" onclick="closeOmdbRow('${rowId}')" title="Close">&times;</span>`
+        : '';
+    return `
+        <div class="movie-card" style="position:relative;">
+            ${closeBtn}
+            ${posterSrc ? 
+                `<img src="${posterSrc}" alt="${movie.Title} Poster" class="movie-poster" onerror="this.style.display='none'">` :
+                `<div class="movie-poster no-poster">No Poster Available</div>`
+            }
+            <div class="movie-info">
+                <h3 class="movie-title">${movie.Title} (${movie.Year})</h3>
+                <div class="movie-detail"><strong>Type:</strong> ${movie.Type}</div>
+                <div class="movie-detail"><strong>Genre:</strong> ${movie.Genre}</div>
+                <div class="movie-detail"><strong>Director:</strong> ${movie.Director}</div>
+                <div class="movie-detail"><strong>Cast:</strong> ${movie.Actors}</div>
+                <div class="movie-detail"><strong>Runtime:</strong> ${movie.Runtime}</div>
+                <div class="movie-detail"><strong>Released:</strong> ${movie.Released}</div>
+                <div class="movie-detail"><strong>Rating:</strong> ${movie.Rated}</div>
+                <div class="movie-detail"><strong>IMDB Rating:</strong> ${movie.imdbRating}/10</div>
+                ${movie.Plot !== "N/A" ? `<div class="movie-plot"><strong>Plot:</strong> ${movie.Plot}</div>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function renderSearchResults(searchResults, omdbRow) {
+    let html = '<h3>Multiple results found. Click on a movie to see details:</h3>';
+    html += '<div>';
+    searchResults.slice(0, 5).forEach(movie => { // Show first 5 results
+        const posterSrc = movie.Poster && movie.Poster !== "N/A" ? movie.Poster : null;
+        html += `
+            <div class="movie-card" style="cursor: pointer;" onclick="getMovieDetailsInline('${movie.imdbID}', '${omdbRow.id}')">
+                ${posterSrc ? 
+                    `<img src="${posterSrc}" alt="${movie.Title} Poster" class="movie-poster" style="width: 80px; height: 120px;">` :
+                    `<div class="movie-poster no-poster" style="width: 80px; height: 120px; font-size: 10px;">No Poster</div>`
+                }
+                <div class="movie-info">
+                    <h4 class="movie-title">${movie.Title} (${movie.Year})</h4>
+                    <div class="movie-detail"><strong>Type:</strong> ${movie.Type}</div>
+                    <div class="movie-detail"><em>Click for full details</em></div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    return html;
+}
+
+// Inline details fetch for table row
+async function getMovieDetailsInline(imdbID, rowId) {
+    const omdbRow = document.getElementById(rowId);
+    omdbRow.children[0].innerHTML = '<div class="no-data">Loading movie details...</div>';
+    try {
+        const detailUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=full`;
+        const response = await fetch(detailUrl);
+        const data = await response.json();
+        if (data.Response === "True") {
+            currentMovieData = data;
+            omdbRow.children[0].innerHTML = renderMovieCard(data, rowId);
+        } else {
+            omdbRow.children[0].innerHTML = '<div class="no-data" style="color: #e74c3c;">Error loading movie details</div>';
+        }
+    } catch (error) {
+        omdbRow.children[0].innerHTML = `<div class="no-data" style="color: #e74c3c;">Error: ${error.message}</div>`;
+    }
+}
+
+// Close OMDB row function
+function closeOmdbRow(rowId) {
+    const omdbRow = document.getElementById(rowId);
+    if (omdbRow) {
+        omdbRow.style.display = 'none';
+        omdbRow.children[0].innerHTML = '';
+        // Optionally reset the button text
+        const prevBtn = omdbRow.previousElementSibling.querySelector('button');
+        if (prevBtn) prevBtn.textContent = 'Search Movie';
+    }
+}
+    </script>
+</body>
+</html>
